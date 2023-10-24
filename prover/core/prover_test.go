@@ -21,29 +21,38 @@ import (
 )
 
 var (
-	paramsPath    = flag.String("params", "/assets/test_params", "params dir")
-	assetsPath    = flag.String("assets", "/assets/test_assets", "assets dir")
-	tracePath1    = flag.String("trace1", "/assets/traces/1_transfer.json", "chunk trace 1")
-	batchVkPath   = flag.String("batch-vk", "/assets/test_assets/agg_vk.vkey", "batch vk")
-	chunkVkPath   = flag.String("chunk-vk", "/assets/test_assets/chunk_vk.vkey", "chunk vk")
+	paramsPath  = flag.String("params", "/assets/test_params", "params dir")
+	assetsPath  = flag.String("assets", "/assets/test_assets", "assets dir")
+	tracePath1  = flag.String("trace1", "/assets/traces/1_transfer.json", "chunk trace 1")
+	batchVkPath = flag.String("batch-vk", "/assets/test_assets/agg_vk.vkey", "batch vk")
+	chunkVkPath = flag.String("chunk-vk", "/assets/test_assets/chunk_vk.vkey", "chunk vk")
 )
 
 func TestFFI(t *testing.T) {
 	as := assert.New(t)
 
+	chunkProverConfig := &config.ProverCoreConfig{
+		ParamsPath: *paramsPath,
+		AssetsPath: *assetsPath,
+		ProofType:  message.ProofTypeChunk,
+	}
+	chunkProverCore, err := core.NewProverCore(chunkProverConfig)
+	as.NoError(err)
+	t.Log("Constructed chunk prover")
+	as.Equal(chunkProverCore.VK, readVk(*chunkVkPath, as))
+	t.Log("Chunk VK must be available when init")
+
+	batchProverConfig := &config.ProverCoreConfig{
+		ParamsPath: *paramsPath,
+		AssetsPath: *assetsPath,
+		ProofType:  message.ProofTypeBatch,
+	}
+	batchProverCore, err := core.NewProverCore(batchProverConfig)
+	as.NoError(err)
+	as.Equal(batchProverCore.VK, readVk(*batchVkPath, as))
+	t.Log("Batch VK must be available when init")
+
 	for i := 1; i <= 50; i++ {
-		chunkProverConfig := &config.ProverCoreConfig{
-			ParamsPath: *paramsPath,
-			AssetsPath: *assetsPath,
-			ProofType:  message.ProofTypeChunk,
-		}
-		chunkProverCore, err := core.NewProverCore(chunkProverConfig)
-		as.NoError(err)
-		t.Log("Constructed chunk prover")
-
-		as.Equal(chunkProverCore.VK, readVk(*chunkVkPath, as))
-		t.Log("Chunk VK must be available when init")
-
 		chunkTrace1 := readChunkTrace(*tracePath1, as)
 		t.Log("Loaded chunk traces")
 
@@ -57,17 +66,6 @@ func TestFFI(t *testing.T) {
 
 		as.Equal(chunkProverCore.VK, readVk(*chunkVkPath, as))
 		t.Log("Chunk VKs must be equal after proving")
-
-		batchProverConfig := &config.ProverCoreConfig{
-			ParamsPath: *paramsPath,
-			AssetsPath: *assetsPath,
-			ProofType:  message.ProofTypeBatch,
-		}
-		batchProverCore, err := core.NewProverCore(batchProverConfig)
-		as.NoError(err)
-
-		as.Equal(batchProverCore.VK, readVk(*batchVkPath, as))
-		t.Log("Batch VK must be available when init")
 
 		chunkInfos := []*message.ChunkInfo{chunkInfo1}
 		chunkProofs := []*message.ChunkProof{chunkProof1}
