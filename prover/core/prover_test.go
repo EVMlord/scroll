@@ -45,7 +45,7 @@ func TestFFI(t *testing.T) {
 	for i := 1; i <= 50; i++ {
 		t.Log("Proof-", i, " BEGIN mem: ", memUsage(as))
 
-		_, _ := chunkProverCore.ProveChunk("chunk_proof1", chunkTrace1)
+		chunkProverCore.ProveChunk("chunk_proof1", chunkTrace1)
 		// as.NoError(err)
 		// t.Log("Generated chunk proof")
 
