@@ -80,6 +80,7 @@ pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const 
             .map_err(|e| format!("failed to generate proof: {e:?}"))?;
 */
 
+        PROVER.get_mut().expect("failed to get mutable reference to PROVER.");
         let proof = vec!['a'; 5_000_000_000];
         serde_json::to_vec(&proof).map_err(|e| format!("failed to serialize the proof: {e:?}"))
     })
