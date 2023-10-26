@@ -12,10 +12,10 @@ use prover::{
     zkevm::{Prover, Verifier},
     BlockTrace, ChunkProof,
 };
-use std::{cell::OnceCell, env, ptr::null};
+use std::{env, ptr::null};
 
-static mut PROVER: OnceCell<Prover> = OnceCell::new();
-static mut VERIFIER: OnceCell<Verifier> = OnceCell::new();
+static mut PROVER: Option<Prover> = None;
+static mut VERIFIER: Option<Verifier> = None;
 
 /// # Safety
 #[no_mangle]
@@ -35,7 +35,7 @@ pub unsafe extern "C" fn init_chunk_prover(params_dir: *const c_char, assets_dir
 
     let prover = Prover::from_dirs(params_dir, assets_dir);
 
-    PROVER.set(prover).unwrap();
+    PROVER = Some(prover);
 }
 
 /// # Safety
@@ -50,13 +50,13 @@ pub unsafe extern "C" fn init_chunk_verifier(params_dir: *const c_char, assets_d
     env::set_var("SCROLL_PROVER_ASSETS_DIR", assets_dir);
     let verifier = Verifier::from_dirs(params_dir, assets_dir);
 
-    VERIFIER.set(verifier).unwrap();
+    VERIFIER = Some(verifier);
 }
 
 /// # Safety
 #[no_mangle]
 pub unsafe extern "C" fn get_chunk_vk() -> *const c_char {
-    let vk_result = panic_catch(|| PROVER.get_mut().unwrap().get_vk());
+    let vk_result = panic_catch(|| PROVER.as_mut().unwrap().get_vk());
 
     vk_result
         .ok()
@@ -73,7 +73,7 @@ pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const 
             .map_err(|e| format!("failed to deserialize block traces: {e:?}"))?;
 
         let proof = PROVER
-            .get_mut()
+            .as_mut()
             .expect("failed to get mutable reference to PROVER.")
             .gen_chunk_proof(block_traces, None, None, OUTPUT_DIR.as_deref())
             .map_err(|e| format!("failed to generate proof: {e:?}"))?;
@@ -102,6 +102,6 @@ pub unsafe extern "C" fn verify_chunk_proof(proof: *const c_char) -> c_char {
     let proof = c_char_to_vec(proof);
     let proof = serde_json::from_slice::<ChunkProof>(proof.as_slice()).unwrap();
 
-    let verified = panic_catch(|| VERIFIER.get().unwrap().verify_chunk_proof(proof));
+    let verified = panic_catch(|| VERIFIER.as_mut().unwrap().verify_chunk_proof(proof));
     verified.unwrap_or(false) as c_char
 }
