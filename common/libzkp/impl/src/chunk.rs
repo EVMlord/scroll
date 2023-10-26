@@ -67,14 +67,15 @@ pub unsafe extern "C" fn get_chunk_vk() -> *const c_char {
 /// # Safety
 #[no_mangle]
 pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const c_char {
+    let prover = PROVER
+        .as_mut()
+        .expect("failed to get mutable reference to PROVER.");
     let proof_result: Result<Vec<u8>, String> = panic_catch(|| {
         let block_traces = c_char_to_vec(block_traces);
         let block_traces = serde_json::from_slice::<Vec<BlockTrace>>(&block_traces)
             .map_err(|e| format!("failed to deserialize block traces: {e:?}"))?;
 
-        let proof = PROVER
-            .as_mut()
-            .expect("failed to get mutable reference to PROVER.")
+        let proof = prover
             .gen_chunk_proof(block_traces, None, None, OUTPUT_DIR.as_deref())
             .map_err(|e| format!("failed to generate proof: {e:?}"))?;
 
