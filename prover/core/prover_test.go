@@ -44,7 +44,7 @@ func TestFFI(t *testing.T) {
 		chunkTrace1 := readChunkTrace(*tracePath1, as)
 		t.Log("Loaded chunk traces")
 
-		_chunkProof1, err := chunkProverCore.ProveChunk("chunk_proof1", chunkTrace1)
+		_, err := chunkProverCore.ProveChunk("chunk_proof1", chunkTrace1)
 		as.NoError(err)
 		t.Log("Generated chunk proof")
 
