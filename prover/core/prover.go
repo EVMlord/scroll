@@ -110,10 +110,16 @@ func (p *ProverCore) ProveChunk(taskID string, traces []*types.BlockTrace) (*mes
 		return nil, fmt.Errorf("prover is not a chunk-prover (type: %v), but is trying to prove a chunk", p.cfg.ProofType)
 	}
 
-	tracesByt, err := json.Marshal(traces)
+	// tracesByt, err := json.Marshal(traces)
+	_, err := json.Marshal(traces)
 	if err != nil {
 		return nil, err
 	}
+
+	return nil, nil
+
+/*
+
 	proofByt, err := p.proveChunk(tracesByt)
 	if err != nil {
 		return nil, err
@@ -126,6 +132,8 @@ func (p *ProverCore) ProveChunk(taskID string, traces []*types.BlockTrace) (*mes
 
 	zkProof := &message.ChunkProof{}
 	return zkProof, json.Unmarshal(proofByt, zkProof)
+
+*/
 }
 
 // TracesToChunkInfo convert traces to chunk info
