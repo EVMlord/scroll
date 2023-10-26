@@ -216,6 +216,8 @@ func (p *ProverCore) proveChunk(tracesByt []byte) ([]byte, error) {
 	tracesStr := C.CString(string(tracesByt))
 	defer C.free(unsafe.Pointer(tracesStr))
 
+	return make([]byte, 1), nil
+/*
 	log.Info("Start to create chunk proof ...")
 	cProof := C.gen_chunk_proof(tracesStr)
 	defer C.free_c_chars(cProof)
@@ -232,6 +234,7 @@ func (p *ProverCore) proveChunk(tracesByt []byte) ([]byte, error) {
 	}
 
 	return result.Message, nil
+*/
 }
 
 func (p *ProverCore) mayDumpProof(id string, proofByt []byte) error {
