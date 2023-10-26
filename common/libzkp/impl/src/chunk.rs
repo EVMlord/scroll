@@ -70,31 +70,12 @@ pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const 
     let prover = PROVER
         .as_mut()
         .expect("failed to get mutable reference to PROVER.");
-    let proof_result: Result<Vec<u8>, String> = panic_catch(|| {
-        let block_traces = c_char_to_vec(block_traces);
-        let block_traces = serde_json::from_slice::<Vec<BlockTrace>>(&block_traces)
-            .map_err(|e| format!("failed to deserialize block traces: {e:?}"))?;
+    let block_traces = c_char_to_vec(block_traces);
+    let block_traces = serde_json::from_slice::<Vec<BlockTrace>>(&block_traces).unwrap();
 
-        let proof = prover
-            .gen_chunk_proof(block_traces, None, None, OUTPUT_DIR.as_deref())
-            .map_err(|e| format!("failed to generate proof: {e:?}"))?;
+    prover.gen_chunk_proof(block_traces, None, None, OUTPUT_DIR.as_deref());
 
-        serde_json::to_vec(&proof).map_err(|e| format!("failed to serialize the proof: {e:?}"))
-    })
-    .unwrap_or_else(|e| Err(format!("unwind error: {e:?}")));
-
-    let r = match proof_result {
-        Ok(proof_bytes) => ProofResult {
-            message: Some(proof_bytes),
-            error: None,
-        },
-        Err(err) => ProofResult {
-            message: None,
-            error: Some(err),
-        },
-    };
-
-    serde_json::to_vec(&r).map_or(null(), vec_to_c_char)
+    null()
 }
 
 /// # Safety
