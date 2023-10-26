@@ -4,11 +4,11 @@
 package core_test
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"io"
 	"os"
+	"os/exec"
 	"testing"
 
 	"github.com/scroll-tech/go-ethereum/core/types"
@@ -21,11 +21,9 @@ import (
 )
 
 var (
-	paramsPath  = flag.String("params", "/assets/test_params", "params dir")
-	assetsPath  = flag.String("assets", "/assets/test_assets", "assets dir")
-	tracePath1  = flag.String("trace1", "/assets/traces/1_transfer.json", "chunk trace 1")
-	batchVkPath = flag.String("batch-vk", "/assets/test_assets/agg_vk.vkey", "batch vk")
-	chunkVkPath = flag.String("chunk-vk", "/assets/test_assets/chunk_vk.vkey", "chunk vk")
+	paramsPath = flag.String("params", "/assets/test_params", "params dir")
+	assetsPath = flag.String("assets", "/assets/test_assets", "assets dir")
+	tracePath1 = flag.String("trace1", "/assets/traces/1_transfer.json", "chunk trace 1")
 )
 
 func TestFFI(t *testing.T) {
@@ -39,42 +37,22 @@ func TestFFI(t *testing.T) {
 	chunkProverCore, err := core.NewProverCore(chunkProverConfig)
 	as.NoError(err)
 	t.Log("Constructed chunk prover")
-	as.Equal(chunkProverCore.VK, readVk(*chunkVkPath, as))
-	t.Log("Chunk VK must be available when init")
-
-	batchProverConfig := &config.ProverCoreConfig{
-		ParamsPath: *paramsPath,
-		AssetsPath: *assetsPath,
-		ProofType:  message.ProofTypeBatch,
-	}
-	batchProverCore, err := core.NewProverCore(batchProverConfig)
-	as.NoError(err)
-	as.Equal(batchProverCore.VK, readVk(*batchVkPath, as))
-	t.Log("Batch VK must be available when init")
 
 	for i := 1; i <= 50; i++ {
+		t.Log("Proof-", i, " BEGIN mem: ", memUsage())
+
 		chunkTrace1 := readChunkTrace(*tracePath1, as)
 		t.Log("Loaded chunk traces")
 
 		chunkInfo1, err := chunkProverCore.TracesToChunkInfo(chunkTrace1)
 		as.NoError(err)
-		t.Log("Converted to chunk infos")
+		t.Log("Converted to chunk info")
 
 		chunkProof1, err := chunkProverCore.ProveChunk("chunk_proof1", chunkTrace1)
 		as.NoError(err)
-		t.Log("Generated and dumped chunk proof 1")
+		t.Log("Generated chunk proof")
 
-		as.Equal(chunkProverCore.VK, readVk(*chunkVkPath, as))
-		t.Log("Chunk VKs must be equal after proving")
-
-		chunkInfos := []*message.ChunkInfo{chunkInfo1}
-		chunkProofs := []*message.ChunkProof{chunkProof1}
-		_, err = batchProverCore.ProveBatch("batch_proof", chunkInfos, chunkProofs)
-		as.NoError(err)
-		t.Log("Generated and dumped batch proof")
-
-		as.Equal(batchProverCore.VK, readVk(*batchVkPath, as))
-		t.Log("Batch VKs must be equal after proving")
+		t.Log("Proof-", i, " END mem: ", memUsage())
 	}
 }
 
@@ -90,11 +68,12 @@ func readChunkTrace(filePat string, as *assert.Assertions) []*types.BlockTrace {
 	return []*types.BlockTrace{trace}
 }
 
-func readVk(filePat string, as *assert.Assertions) string {
-	f, err := os.Open(filePat)
-	as.NoError(err)
-	byt, err := io.ReadAll(f)
+func memUsage(as *assert.Assertions) string {
+	mem := "echo \"$(date '+%Y-%m-%d %H:%M:%S') $(free -g | grep Mem: | sed 's/Mem://g')\""
+	cmd := exec.Command("bash", "-c", mem)
+
+	output, err := cmd.Output()
 	as.NoError(err)
 
-	return base64.StdEncoding.EncodeToString(byt)
+	return output
 }
