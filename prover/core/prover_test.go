@@ -71,5 +71,5 @@ func memUsage(as *assert.Assertions) string {
 	output, err := cmd.Output()
 	as.NoError(err)
 
-	return output
+	return string(output)
 }
