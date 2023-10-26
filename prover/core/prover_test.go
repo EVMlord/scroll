@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"runtime"
 	"testing"
 
 	"github.com/scroll-tech/go-ethereum/core/types"
@@ -49,6 +50,9 @@ func TestFFI(t *testing.T) {
 		t.Log("Generated chunk proof")
 
 		t.Log("Proof-", i, " END mem: ", memUsage(as))
+
+		runtime.GC()
+		t.Log("Cleared GC manually")
 	}
 }
 
