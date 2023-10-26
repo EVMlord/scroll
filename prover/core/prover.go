@@ -216,13 +216,14 @@ func (p *ProverCore) proveChunk(tracesByt []byte) ([]byte, error) {
 	tracesStr := C.CString(string(tracesByt))
 	defer C.free(unsafe.Pointer(tracesStr))
 
-	return make([]byte, 1), nil
-/*
 	log.Info("Start to create chunk proof ...")
 	cProof := C.gen_chunk_proof(tracesStr)
 	defer C.free_c_chars(cProof)
 	log.Info("Finish creating chunk proof!")
 
+	return make([]byte, 1), nil
+
+/*
 	var result ProofResult
 	err := json.Unmarshal([]byte(C.GoString(cProof)), &result)
 	if err != nil {
