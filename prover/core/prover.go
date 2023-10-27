@@ -127,7 +127,7 @@ func (p *ProverCore) ProveChunk(taskID string, traces []*types.BlockTrace) (*mes
 	// proofByt, err := p.proveChunk(tracesByt)
 	p.proveChunk(tracesByt)
 
-	tracesByt = nil
+	// tracesByt = nil
 
 	return nil, nil
 /*
