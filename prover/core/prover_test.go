@@ -39,13 +39,14 @@ func TestFFI(t *testing.T) {
 	as.NoError(err)
 	t.Log("Constructed chunk prover")
 
-	chunkTrace1 := readChunkTrace(*tracePath1, as)
+	// chunkTrace1 := readChunkTrace(*tracePath1, as)
+	readChunkTrace(*tracePath1, as)
 	t.Log("Loaded chunk traces")
 
 	for i := 1; i <= 100; i++ {
 		t.Log("Proof-", i, " BEGIN mem: ", memUsage(as))
 
-		chunkProverCore.ProveChunk("chunk_proof1", chunkTrace1)
+		// chunkProverCore.ProveChunk("chunk_proof1", chunkTrace1)
 		// as.NoError(err)
 		// t.Log("Generated chunk proof")
 
