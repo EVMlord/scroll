@@ -59,6 +59,7 @@ func TestFFI(t *testing.T) {
 
 	time.Sleep(5 * time.Second)
 
+	t.Log("END-END mem: ", memUsage(as))
 }
 
 func readChunkTrace(filePat string, as *assert.Assertions) []*types.BlockTrace {
