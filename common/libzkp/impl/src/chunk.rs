@@ -14,7 +14,9 @@ use prover::{
 };
 use std::{env, ptr::null};
 
+#[no_mangle]
 static mut PROVER: Option<Prover> = None;
+#[no_mangle]
 static mut VERIFIER: Option<Verifier> = None;
 
 /// # Safety
@@ -67,11 +69,12 @@ pub unsafe extern "C" fn get_chunk_vk() -> *const c_char {
 /// # Safety
 #[no_mangle]
 pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const c_char {
-    return null();
-
     let prover = PROVER
         .as_mut()
         .expect("failed to get mutable reference to PROVER.");
+
+    return null();
+
     let block_traces = c_char_to_vec(block_traces);
     let block_traces = serde_json::from_slice::<Vec<BlockTrace>>(&block_traces).unwrap();
 
