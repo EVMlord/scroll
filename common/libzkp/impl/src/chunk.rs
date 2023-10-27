@@ -67,6 +67,8 @@ pub unsafe extern "C" fn get_chunk_vk() -> *const c_char {
 /// # Safety
 #[no_mangle]
 pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const c_char {
+    return null();
+
     let prover = PROVER
         .as_mut()
         .expect("failed to get mutable reference to PROVER.");
