@@ -72,13 +72,13 @@ pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const 
     let block_traces = c_char_to_vec(block_traces);
     log::info!("gupeng - block_traces.len = {}", block_traces.len());
 
-    let block_traces = serde_json::from_slice::<Vec<BlockTrace>>(&block_traces).unwrap();
+    // let block_traces = serde_json::from_slice::<Vec<BlockTrace>>(&block_traces).unwrap();
 
     drop(block_traces);
 
-    let a = vec!['a'; 10_000_000_000];
     return null();
 
+/*
     let prover = PROVER
         .as_mut()
         .expect("failed to get mutable reference to PROVER.");
@@ -86,6 +86,8 @@ pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const 
     prover.gen_chunk_proof(block_traces, None, None, OUTPUT_DIR.as_deref());
 
     null()
+
+*/
 }
 
 /// # Safety
