@@ -57,9 +57,11 @@ func TestFFI(t *testing.T) {
 		t.Log("Cleared GC manually")
 	}
 
-	time.Sleep(5 * time.Second)
+	for j := 1; j <= 5; j++ {
+		time.Sleep(5 * time.Second)
 
-	t.Log("END-END mem: ", memUsage(as))
+		t.Log("END-", j, " mem: ", memUsage(as))
+	}
 }
 
 func readChunkTrace(filePat string, as *assert.Assertions) []*types.BlockTrace {
