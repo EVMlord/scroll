@@ -72,6 +72,7 @@ pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const 
     let block_traces = c_char_to_vec(block_traces);
     let block_traces = serde_json::from_slice::<Vec<BlockTrace>>(&block_traces).unwrap();
 
+    drop(block_traces);
     return null();
 
     let prover = PROVER
