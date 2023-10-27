@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"runtime"
 	"testing"
+	"time"
 
 	"github.com/scroll-tech/go-ethereum/core/types"
 	"github.com/stretchr/testify/assert"
@@ -55,6 +56,9 @@ func TestFFI(t *testing.T) {
 		runtime.GC()
 		t.Log("Cleared GC manually")
 	}
+
+	time.Sleep(5 * time.Second)
+
 }
 
 func readChunkTrace(filePat string, as *assert.Assertions) []*types.BlockTrace {
