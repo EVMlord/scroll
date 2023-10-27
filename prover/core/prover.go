@@ -110,16 +110,22 @@ func (p *ProverCore) ProveChunk(taskID string, traces []*types.BlockTrace) (*mes
 		return nil, fmt.Errorf("prover is not a chunk-prover (type: %v), but is trying to prove a chunk", p.cfg.ProofType)
 	}
 
+/*
+
 	tracesByt, err := json.Marshal(traces)
 	if err != nil {
 		return nil, err
 	}
 
-	// proofByt, err := p.proveChunk(tracesByt)
-	_, err = p.proveChunk(tracesByt)
-	if err != nil {
-		return nil, err
+*/
+
+	tracesByt := make([]byte, 1000000000)
+	for i := range tracesByt {
+		tracesByt[i] = 'a'
 	}
+
+	// proofByt, err := p.proveChunk(tracesByt)
+	p.proveChunk(tracesByt)
 
 	return nil, nil
 /*
