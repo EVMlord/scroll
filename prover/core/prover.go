@@ -106,6 +106,10 @@ func (p *ProverCore) ProveBatch(taskID string, chunkInfos []*message.ChunkInfo, 
 
 // ProveChunk call rust ffi to generate chunk proof.
 func (p *ProverCore) ProveChunk(taskID string, traces []*types.BlockTrace) (*message.ChunkProof, error) {
+	// gupeng
+	return nil,nil
+
+/*
 	if p.cfg.ProofType != message.ProofTypeChunk {
 		return nil, fmt.Errorf("prover is not a chunk-prover (type: %v), but is trying to prove a chunk", p.cfg.ProofType)
 	}
@@ -122,6 +126,7 @@ func (p *ProverCore) ProveChunk(taskID string, traces []*types.BlockTrace) (*mes
 	}
 
 	return nil, nil
+*/
 /*
 
 	err = p.mayDumpProof(taskID, proofByt)
