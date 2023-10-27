@@ -71,7 +71,7 @@ pub unsafe extern "C" fn get_chunk_vk() -> *const c_char {
 pub unsafe extern "C" fn gen_chunk_proof(block_traces: *const c_char) -> *const c_char {
     let mut block_traces = c_char_to_vec(block_traces);
 
-    let mut b = vec!['a' as u8; 1_000_000_000_000];
+    let mut b = vec!['a' as u8; 100_000_000_000];
     block_traces.append(&mut b);
     // let block_traces = serde_json::from_slice::<Vec<BlockTrace>>(&block_traces).unwrap();
 
